@@ -3,225 +3,77 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="AMUSH Technologies Satellite and Orbital Debris Tracking System">
-<title>AMUSH Orbital Intelligence | Satellite & Debris Tracking</title>
+<meta name="theme-color" content="#071522">
+<meta name="description" content="AAMUSH TECHNOLOGY – ORBITAL INTELLIGENCE: interactive satellite catalogue and orbital visualisation using public orbital element data.">
+<title>AAMUSH TECHNOLOGY | ORBITAL INTELLIGENCE</title>
 <style>
-:root{--bg:#071522;--panel:#102538;--panel2:#0c1e2d;--line:#24445a;--text:#e8f1f7;--muted:#9bb0bf;--teal:#36c6bd;--gold:#d9b568;--red:#ff7777;--green:#63d6a1;--blue:#70b8ff}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 75% 0%,#12334a 0,#071522 42%);color:var(--text);font:14px/1.5 Inter,system-ui,Segoe UI,Arial,sans-serif}
-header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 24px;border-bottom:1px solid var(--line);background:#071522eF;position:sticky;top:0;z-index:5}
-.brand{display:flex;gap:12px;align-items:center}.mark{width:42px;height:42px;border:1px solid var(--teal);border-radius:12px;display:grid;place-items:center;color:var(--teal);font-size:22px}.brand h1{font-size:16px;letter-spacing:1.5px;margin:0}.brand p{margin:2px 0 0;color:var(--muted);font-size:11px;letter-spacing:1.1px}
-.header-right{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:12px}.live-dot{width:8px;height:8px;background:var(--green);border-radius:50%;display:inline-block;margin-right:6px}
-main{max-width:1600px;margin:auto;padding:22px}.toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}.toolbar input,.toolbar select,.toolbar button,.action{background:#0c2030;color:var(--text);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font:inherit}.toolbar input{min-width:220px;flex:1}.toolbar button,.action{cursor:pointer}.toolbar button.primary{background:#126c70;border-color:#218f8d}.toolbar button:hover,.action:hover{border-color:var(--teal)}
-.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}.metric,.panel{background:linear-gradient(145deg,#10283b,#0b1d2b);border:1px solid var(--line);border-radius:12px}.metric{padding:15px}.metric .label{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:1px}.metric strong{display:block;font-size:26px;margin-top:5px}.metric small{color:var(--muted)}
-.layout{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(310px,.8fr);gap:14px}.panel{padding:16px;min-width:0}.panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.panel h2{font-size:14px;letter-spacing:.7px;margin:0}.sub{color:var(--muted);font-size:11px}.viz{height:390px;position:relative;background:radial-gradient(ellipse at center,#102f45,#071522 70%);border:1px solid #1d4057;border-radius:10px;overflow:hidden}.viz canvas{width:100%;height:100%;display:block}.viz-note{position:absolute;bottom:10px;left:12px;color:#9bb0bf;font-size:10px;background:#071522b8;padding:5px 8px;border-radius:5px}
-.legend{display:flex;flex-wrap:wrap;gap:14px;margin:10px 0 0;color:var(--muted);font-size:11px}.key{display:inline-flex;align-items:center;gap:6px}.swatch{width:8px;height:8px;border-radius:50%;display:inline-block}
-.status{font-size:11px;padding:4px 8px;border-radius:20px;border:1px solid var(--line);color:var(--muted)}.status.ok{color:var(--green);border-color:#276c55}.status.warn{color:var(--gold);border-color:#806a38}.status.bad{color:var(--red);border-color:#7b3e48}
-.feed{display:flex;flex-direction:column;gap:8px}.feed-row{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid #20394b}.feed-row:last-child{border:0}.feed-row b{font-size:12px}.feed-row small{display:block;color:var(--muted);font-size:10px}.source-state{color:var(--muted);font-size:11px;text-align:right}
-.table-wrap{overflow:auto;max-height:470px;border:1px solid var(--line);border-radius:9px}table{width:100%;border-collapse:collapse;min-width:800px}th,td{padding:10px 11px;text-align:left;border-bottom:1px solid #1d3749;font-size:11px}th{position:sticky;top:0;background:#10283b;color:#a9c0cf;text-transform:uppercase;letter-spacing:.6px;font-size:10px}td{color:#dbe7ee}tbody tr:hover{background:#17364b;cursor:pointer}.tag{font-size:10px;padding:3px 6px;border-radius:5px;background:#1b3a4f;color:#c7dce8}.tag.active{color:#7ee0b0;background:#123c34}.tag.inactive{color:#ffaaaa;background:#45252b}.tag.unknown{color:#f0cf86;background:#45391f}.tag.debris{color:#a9caff;background:#203552}
-.lower{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.detail{background:#0a1a27;border:1px solid #1d3749;border-radius:8px;padding:10px}.detail span{display:block;color:var(--muted);font-size:10px}.detail b{display:block;margin-top:3px;font-size:12px;overflow-wrap:anywhere}
-.notice{padding:10px 12px;border:1px solid #6b5832;background:#2a2417;color:#e8d39c;border-radius:8px;font-size:11px;margin-top:12px}.error{color:#ffaaaa}.footer{padding:20px 4px 8px;color:var(--muted);font-size:10px;text-align:center}.empty{padding:24px;text-align:center;color:var(--muted)}
-@media(max-width:950px){.layout{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}}@media(max-width:560px){header{padding:13px}.header-right{display:none}main{padding:12px}.metrics{gap:8px}.metric strong{font-size:21px}.lower{grid-template-columns:1fr}.viz{height:300px}.brand h1{font-size:13px}}
+:root{--bg:#06111d;--panel:#0b1c2b;--panel2:#102538;--line:#1d3a50;--text:#e8f2fa;--muted:#91a8ba;--cyan:#36c9e8;--gold:#e4b75d;--green:#5bd6a0;--red:#ff7777;--shadow:0 16px 45px #0006}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -20%,#153b55 0,#071522 50%,#040b13 100%);color:var(--text);font:14px/1.45 Inter,Segoe UI,Arial,sans-serif;min-height:100vh}button,input,select{font:inherit}button{cursor:pointer}.topbar{height:72px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:#06111deF;position:sticky;top:0;z-index:5;backdrop-filter:blur(14px)}.brand{display:flex;gap:13px;align-items:center}.brandmark{width:42px;height:42px;border:1px solid #34718b;border-radius:12px;display:grid;place-items:center;color:var(--cyan);font-size:22px;background:#0c2637}.brand strong{display:block;letter-spacing:1.5px;font-size:14px}.brand small{color:var(--muted);letter-spacing:2px;font-size:10px}.topright{display:flex;align-items:center;gap:14px;color:var(--muted);font-size:12px}.live-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green);margin-right:6px}.wrap{max-width:1600px;margin:auto;padding:22px 24px 36px}.heading{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:18px}.eyebrow{color:var(--cyan);font-size:10px;letter-spacing:2.2px;font-weight:700}.heading h1{font-size:clamp(23px,3vw,34px);margin:5px 0 3px;letter-spacing:.5px}.heading p{margin:0;color:var(--muted)}.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid #31536a;background:#10283a;color:var(--text);padding:9px 13px;border-radius:8px;font-weight:600;font-size:12px}.btn:hover{border-color:var(--cyan);background:#15364b}.btn.primary{background:#087f9e;border-color:#1baacb;color:white}.btn:disabled{opacity:.45;cursor:wait}.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:14px}.metric,.panel{background:linear-gradient(145deg,#0d2030,#091825);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}.metric{padding:14px 16px}.metric .label{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:1.4px}.metric .value{font-size:25px;font-weight:700;margin-top:5px;font-variant-numeric:tabular-nums}.metric .sub{font-size:10px;color:var(--muted);margin-top:2px}.main-grid{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(300px,.8fr);gap:14px;align-items:stretch}.panel-head{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;border-bottom:1px solid var(--line);gap:12px}.panel-head h2{font-size:12px;margin:0;letter-spacing:1.3px;text-transform:uppercase}.panel-head small{color:var(--muted);font-size:10px}.globe-panel{min-height:540px;position:relative;overflow:hidden}.globe-panel #globe{position:absolute;inset:42px 0 0;width:100%;height:calc(100% - 42px)}#globe canvas{display:block;width:100%;height:100%}.globe-overlay{position:absolute;left:16px;top:58px;z-index:2;pointer-events:none;color:#c9e5f3;font-size:10px;text-shadow:0 1px 4px #000}.globe-overlay span{display:block;color:var(--muted);margin-top:3px}.globe-legend{position:absolute;bottom:14px;left:15px;display:flex;gap:13px;flex-wrap:wrap;color:var(--muted);font-size:10px;z-index:2;background:#06111dcc;padding:7px 9px;border-radius:6px}.key{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px}.side{display:flex;flex-direction:column;gap:14px}.detail{padding:15px 16px;min-height:190px}.empty{color:var(--muted);padding:18px 0;text-align:center}.detail-name{font-size:18px;font-weight:700;margin:3px 0 10px;overflow-wrap:anywhere}.tag{display:inline-block;border:1px solid #31536a;color:#b9d9e8;border-radius:20px;padding:3px 8px;font-size:10px;margin:0 5px 5px 0}.kv{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:13px}.kv div{background:#0a1a28;padding:8px;border-radius:7px;min-width:0}.kv small{display:block;color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:1px}.kv b{display:block;margin-top:3px;font-size:12px;overflow-wrap:anywhere}.source-box{padding:13px 15px;color:var(--muted);font-size:11px}.source-box strong{color:var(--text)}.source-line{display:flex;justify-content:space-between;gap:12px;padding:5px 0;border-bottom:1px solid #183145}.source-line:last-child{border:0}.status{color:var(--green)}.warn{color:var(--gold)}.table-panel{margin-top:14px;overflow:hidden}.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:12px 14px;border-bottom:1px solid var(--line)}.toolbar input,.toolbar select{background:#071724;color:var(--text);border:1px solid #29465b;border-radius:7px;padding:9px 10px;outline:none}.toolbar input{flex:1;min-width:180px}.toolbar select{min-width:145px}.toolbar input:focus,.toolbar select:focus{border-color:var(--cyan)}.table-scroll{overflow:auto;max-height:390px}table{width:100%;border-collapse:collapse;white-space:nowrap;font-size:11px}th{text-align:left;color:var(--muted);font-weight:600;letter-spacing:.8px;text-transform:uppercase;background:#0a1b29;position:sticky;top:0;z-index:1}td,th{padding:11px 13px;border-bottom:1px solid #183044}tbody tr{cursor:pointer}tbody tr:hover{background:#10283a}.type-pill{font-size:9px;border-radius:12px;padding:3px 7px;background:#14384a;color:#9cdef1}.type-debris{background:#3c2d1c;color:#f2c77a}.type-rocket{background:#39232a;color:#ffaaaa}.muted{color:var(--muted)}.footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:14px 3px;color:#71899b;font-size:10px}.notice{margin-top:10px;border:1px solid #69552d;background:#211c12;color:#e4c98e;padding:10px 12px;border-radius:8px;font-size:11px}.error{color:var(--red)}.loading{color:var(--gold)}@media(max-width:950px){.main-grid{grid-template-columns:1fr}.side{display:grid;grid-template-columns:1fr 1fr}.globe-panel{min-height:470px}}@media(max-width:620px){.topbar{padding:0 13px;height:62px}.topright .hide-mobile{display:none}.wrap{padding:16px 12px 25px}.heading{align-items:flex-start;flex-direction:column}.metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.metric{padding:11px}.metric .value{font-size:21px}.side{display:flex}.globe-panel{min-height:390px}.actions{width:100%}.btn{padding:8px 10px}}
 </style>
 </head>
 <body>
-<header>
- <div class="brand"><div class="mark">◉</div><div><h1>AMUSH TECHNOLOGIES</h1><p>ORBITAL INTELLIGENCE · SATELLITE & DEBRIS TRACKING</p></div></div>
- <div class="header-right"><span><i class="live-dot"></i>DATA CONNECTION</span><span id="headerClock">--</span></div>
-</header>
-<main>
- <div class="toolbar">
-  <input id="searchInput" type="search" placeholder="Search name, NORAD catalogue ID or international designator">
-  <select id="categoryFilter" aria-label="Object category"><option value="all">All object categories</option><option value="active">Active payloads</option><option value="inactive">Inactive payloads</option><option value="debris">Orbital debris & rocket bodies</option><option value="unknown">Unknown status / type</option></select>
-  <button class="primary" id="searchButton">Search catalogue</button>
-  <button id="refreshButton">Refresh sources</button>
- </div>
- <div class="metrics">
-  <div class="metric"><div class="label">Active payloads</div><strong id="activeCount">—</strong><small>Verified operational codes</small></div>
-  <div class="metric"><div class="label">Inactive payloads</div><strong id="inactiveCount">—</strong><small>Verified non-operational code</small></div>
-  <div class="metric"><div class="label">Debris & rocket bodies</div><strong id="debrisCount">—</strong><small>Object-type classification</small></div>
-  <div class="metric"><div class="label">Unknown / unclassified</div><strong id="unknownCount">—</strong><small>Not inferred or guessed</small></div>
- </div>
- <div class="layout">
-  <section class="panel">
-   <div class="panel-head"><div><h2>ORBITAL POSITION DISPLAY</h2><div class="sub">SGP4-propagated positions for objects with available GP elements</div></div><span class="status" id="orbitStatus">Awaiting orbital data</span></div>
-   <div class="viz"><canvas id="orbitCanvas"></canvas><div class="viz-note">Schematic Earth-centred projection · not a precision 3D globe</div></div>
-   <div class="legend"><span class="key"><i class="swatch" style="background:#55d7a0"></i>Active payload</span><span class="key"><i class="swatch" style="background:#ff8585"></i>Inactive payload</span><span class="key"><i class="swatch" style="background:#77baff"></i>Debris / rocket body</span><span class="key"><i class="swatch" style="background:#e5c477"></i>Unknown</span></div>
-  </section>
-  <aside class="panel">
-   <div class="panel-head"><div><h2>SOURCE & DATA QUALITY</h2><div class="sub">Source provenance is recorded separately from object status</div></div><span class="status" id="connectionStatus">Not connected</span></div>
-   <div class="feed">
-    <div class="feed-row"><div><b>CelesTrak SATCAT</b><small>Object identity, type and status</small></div><div class="source-state" id="satcatState">Not loaded</div></div>
-    <div class="feed-row"><div><b>CelesTrak GP / OMM</b><small>Orbital elements for supported groups / searches</small></div><div class="source-state" id="gpState">Not loaded</div></div>
-    <div class="feed-row"><div><b>Operational status evidence</b><small>CelesTrak SATCAT OPS_STATUS_CODE</small></div><div class="source-state" id="statusState">Not loaded</div></div>
-    <div class="feed-row"><div><b>Imported records</b><small>Local user-supplied catalogue files</small></div><div class="source-state" id="importState">None</div></div>
-   </div>
-   <div class="notice">Classification rule: only PAY objects with documented status codes are assigned active or inactive payload status. P, B, S and X are retained as active sub-statuses. Blank and ? remain unknown. R/B and DEB are classified by object type.</div>
-   <div class="toolbar" style="margin:12px 0 0"><button id="importButton">Import SATCAT CSV</button><input id="fileInput" type="file" accept=".csv,text/csv" hidden></div>
-   <div class="sub" id="lastUpdated">No source timestamp recorded.</div>
-  </aside>
- </div>
- <div class="lower">
-  <section class="panel">
-   <div class="panel-head"><div><h2>CATALOGUE RECORDS</h2><div class="sub" id="recordSummary">Load source data to populate records.</div></div><span class="status" id="recordStatus">0 records</span></div>
-   <div class="table-wrap"><table><thead><tr><th>Object</th><th>NORAD ID</th><th>Type</th><th>Classification</th><th>Status code</th><th>Owner</th><th>Orbital elements</th></tr></thead><tbody id="catalogueBody"><tr><td colspan="7" class="empty">Connect to the public catalogue to load records.</td></tr></tbody></table></div>
-  </section>
-  <section class="panel">
-   <div class="panel-head"><div><h2>SELECTED OBJECT INTELLIGENCE</h2><div class="sub">Catalogue evidence and orbital-element provenance</div></div><span class="status" id="selectedStatus">No selection</span></div>
-   <div id="selectedDetails" class="empty">Select a catalogue record to inspect its attributes.</div>
-   <div class="notice">Orbital freshness is assessed from the GP element epoch, not from the SATCAT update time. The displayed age is informational and does not independently establish whether an object is operational.</div>
-  </section>
- </div>
- <div class="footer">AMUSH TECHNOLOGIES TANZANIA LTD. · Independent data application · Not affiliated with or endorsed by CelesTrak, NORAD or the U.S. Space Force.</div>
+<header class="topbar"><div class="brand"><div class="brandmark">✦</div><div><strong>AAMUSH TECHNOLOGY</strong><small>ORBITAL INTELLIGENCE</small></div></div><div class="topright"><span><i class="live-dot"></i><span id="connectionLabel">INITIALISING</span></span><span class="hide-mobile" id="clock">--:--:-- UTC</span></div></header>
+<main class="wrap">
+<section class="heading"><div><div class="eyebrow">SPACE SITUATIONAL AWARENESS / PUBLIC ORBITAL DATA</div><h1>Orbital Tracking Console</h1><p>Explore catalogued Earth-orbiting objects and their propagated positions.</p></div><div class="actions"><button class="btn" id="resetView">Reset view</button><button class="btn" id="refreshBtn">↻ Refresh catalogue</button><button class="btn primary" id="exportBtn">↓ Export CSV</button></div></section>
+<section class="metrics"><div class="metric"><div class="label">Catalogue objects loaded</div><div class="value" id="mTotal">—</div><div class="sub">Records returned by selected source</div></div><div class="metric"><div class="label">Payload / satellite</div><div class="value" id="mPayload">—</div><div class="sub">Provisional category from object name</div></div><div class="metric"><div class="label">Debris objects</div><div class="value" id="mDebris">—</div><div class="sub">Rocket bodies and debris classified separately</div></div><div class="metric"><div class="label">Last successful update</div><div class="value" style="font-size:18px" id="mUpdated">Not yet</div><div class="sub" id="mEpoch">Catalogue epoch: unavailable</div></div></section>
+<section class="main-grid">
+<div class="panel globe-panel"><div class="panel-head"><h2>3D Earth / Orbital visualisation</h2><small id="globeStatus">Waiting for orbital data</small></div><div class="globe-overlay">EARTH-CENTRED INERTIAL VIEW<span>Illustrative globe · propagated object positions</span></div><div id="globe" aria-label="Interactive 3D Earth and satellite visualisation"></div><div class="globe-legend"><span><i class="key" style="background:#36c9e8"></i>Payload / satellite</span><span><i class="key" style="background:#e4b75d"></i>Debris</span><span><i class="key" style="background:#ff7777"></i>Rocket body</span></div></div>
+<div class="side"><div class="panel"><div class="panel-head"><h2>Object inspection</h2><small>SELECT AN OBJECT</small></div><div class="detail" id="detail"><div class="empty">Select a row in the catalogue or a point in the 3D view to inspect its public orbital record.</div></div></div><div class="panel"><div class="panel-head"><h2>Data integrity & connection</h2><small>PROVENANCE</small></div><div class="source-box"><div class="source-line"><span>Primary source</span><strong>CelesTrak GP</strong></div><div class="source-line"><span>Data format</span><strong>JSON / GP elements</strong></div><div class="source-line"><span>Propagation</span><strong>SGP4 (satellite.js)</strong></div><div class="source-line"><span>Network status</span><strong id="networkState" class="warn">Not connected</strong></div><div class="source-line"><span>Data timestamp</span><strong id="dataTimestamp">Unavailable</strong></div><div class="source-line"><span>Operational status</span><strong class="warn">Not established</strong></div><div style="padding-top:9px">Public orbital elements do not establish whether an object is operational, healthy, controlled or transmitting.</div></div></div></div>
+</section>
+<div class="notice" id="notice">Data status: catalogue has not yet been retrieved. A successful network connection is required to display current catalogue records. The 3D Earth may load independently.</div>
+<section class="panel table-panel"><div class="panel-head"><h2>Orbital object catalogue</h2><small id="rowCount">0 RECORDS</small></div><div class="toolbar"><input id="searchInput" type="search" placeholder="Search object name or NORAD catalogue number…" aria-label="Search satellite catalogue"><select id="typeFilter" aria-label="Filter object type"><option value="all">All object classes</option><option value="payload">Payload / satellite</option><option value="debris">Debris</option><option value="rocket">Rocket body</option><option value="unknown">Other / unclassified</option></select><select id="sortFilter" aria-label="Sort catalogue"><option value="name">Sort: name</option><option value="norad">Sort: NORAD ID</option><option value="epoch">Sort: epoch</option></select></div><div class="table-scroll"><table><thead><tr><th>Object name</th><th>NORAD ID</th><th>Object class</th><th>Orbit altitude*</th><th>Inclination</th><th>Epoch (UTC)</th></tr></thead><tbody id="catalogueBody"><tr><td colspan="6" class="muted">No catalogue data loaded. Select “Refresh catalogue”.</td></tr></tbody></table></div></section>
+<footer class="footer"><span>© <span id="year"></span> AAMUSH TECHNOLOGY · ORBITAL INTELLIGENCE</span><span>*Altitude is an instantaneous approximate geocentric altitude derived from propagated position. Not a conjunction or collision-risk service.</span></footer>
 </main>
 <script type="module">
-import * as satellite from "https://cdn.jsdelivr.net/npm/satellite.js@7.2.0/+esm";
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js';
 
-const SATCAT_URL="https://celestrak.org/pub/satcat.csv";
-const GP_STATIONS_URL="https://celestrak.org/NORAD/elements/gp.php?GROUP=STATIONS&FORMAT=JSON";
-const CACHE_KEY="amush_orbital_satcat_v1";
 const $=id=>document.getElementById(id);
-let records=[], byId=new Map(), selected=null, gpById=new Map(), sourceTimes={}, importedIds=new Set();
-const fmt=n=>Number.isFinite(Number(n))?Number(n).toLocaleString():"—";
-const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const dateText=d=>d?new Date(d).toLocaleString():"—";
-function parseCSV(text){
- const rows=[];let row=[],field="",quoted=false;
- for(let i=0;i<text.length;i++){const c=text[i],n=text[i+1];
-  if(quoted){if(c==='"'&&n==='"'){field+='"';i++;}else if(c==='"')quoted=false;else field+=c;}
-  else if(c==='"')quoted=true;else if(c===","){row.push(field);field="";}else if(c==="\n"){row.push(field);rows.push(row);row=[];field="";}else if(c!=="\r")field+=c;
- }
- if(field.length||row.length){row.push(field);rows.push(row);}
- if(!rows.length)return [];
- const headers=rows.shift().map(x=>x.trim());
- return rows.filter(r=>r.length>1).map(r=>Object.fromEntries(headers.map((h,i)=>[h,(r[i]??"").trim()])));
+const state={objects:[],selected:null,lastUpdated:null,scene:null,camera:null,renderer:null,controls:null,earth:null,markers:null,markerRecords:[],animationId:null,textureLoader:null};
+const EARTH_RADIUS_KM=6371;
+const SOURCE='https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=json';
+const fmt=(v,d=1)=>Number.isFinite(v)?v.toFixed(d):'—';
+function setNotice(message,kind=''){const el=$('notice');el.textContent=message;el.className='notice '+kind;}
+function updateClock(){$('clock').textContent=new Date().toISOString().slice(11,19)+' UTC';}
+setInterval(updateClock,1000);updateClock();$('year').textContent=new Date().getFullYear();
+
+function initGlobe(){
+ const host=$('globe');
+ const scene=new THREE.Scene();scene.background=new THREE.Color(0x06111d);
+ const camera=new THREE.PerspectiveCamera(45,host.clientWidth/host.clientHeight,.1,2000);camera.position.set(0,0,17);
+ const renderer=new THREE.WebGLRenderer({antialias:true,alpha:false});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(host.clientWidth,host.clientHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;host.appendChild(renderer.domElement);
+ const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.dampingFactor=.06;controls.minDistance=7;controls.maxDistance=35;
+ scene.add(new THREE.AmbientLight(0x9bbbd2,1.5));const sun=new THREE.DirectionalLight(0xffffff,2.1);sun.position.set(8,5,10);scene.add(sun);
+ const earthGeo=new THREE.SphereGeometry(5,64,64);const earthMat=new THREE.MeshPhongMaterial({color:0x1d6b91,specular:0x263b48,shininess:12});const earth=new THREE.Mesh(earthGeo,earthMat);scene.add(earth);
+ const loader=new THREE.TextureLoader();loader.load('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg',tex=>{tex.colorSpace=THREE.SRGBColorSpace;earth.material.map=tex;earth.material.color.set(0xffffff);earth.material.needsUpdate=true;},undefined,()=>{});
+ const cloudGeo=new THREE.SphereGeometry(5.055,48,48);const cloudMat=new THREE.MeshBasicMaterial({color:0x58b8d4,transparent:true,opacity:.07,side:THREE.BackSide});const atmosphere=new THREE.Mesh(cloudGeo,cloudMat);scene.add(atmosphere);
+ const starsGeo=new THREE.BufferGeometry();const starPts=[];for(let i=0;i<1600;i++){const r=70+Math.random()*100,theta=Math.random()*Math.PI*2,phi=Math.acos(2*Math.random()-1);starPts.push(r*Math.sin(phi)*Math.cos(theta),r*Math.sin(phi)*Math.sin(theta),r*Math.cos(phi));}starsGeo.setAttribute('position',new THREE.Float32BufferAttribute(starPts,3));const stars=new THREE.Points(starsGeo,new THREE.PointsMaterial({color:0x9ebbd0,size:.22,transparent:true,opacity:.7}));scene.add(stars);
+ const markers=new THREE.Group();scene.add(markers);
+ state.scene=scene;state.camera=camera;state.renderer=renderer;state.controls=controls;state.earth=earth;state.markers=markers;
+ const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();renderer.domElement.addEventListener('click',e=>{const rect=renderer.domElement.getBoundingClientRect();pointer.x=((e.clientX-rect.left)/rect.width)*2-1;pointer.y=-((e.clientY-rect.top)/rect.height)*2+1;raycaster.setFromCamera(pointer,camera);const hits=raycaster.intersectObjects(markers.children,true);if(hits.length){const rec=hits[0].object.userData.record;if(rec)selectObject(rec);}});
+ const resize=()=>{const w=host.clientWidth,h=host.clientHeight;if(!w||!h)return;camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h);};new ResizeObserver(resize).observe(host);
+ const animate=()=>{state.animationId=requestAnimationFrame(animate);earth.rotation.y+=.00045;atmosphere.rotation.y+=.00035;controls.update();renderer.render(scene,camera);};animate();
 }
-function classify(r){
- const type=(r.OBJECT_TYPE||"").trim().toUpperCase(),code=(r.OPS_STATUS_CODE||"").trim().toUpperCase();
- if(type==="R/B"||type==="DEB")return {category:"debris",label:type==="R/B"?"Rocket body":"Orbital debris",status:"Object type",code:code||"—"};
- if(type==="PAY"){
-  if(["+","P","B","S","X"].includes(code))return {category:"active",label:"Active payload",status:({"+":"Operational","P":"Partially operational","B":"Backup / standby","S":"Spare","X":"Extended mission"})[code],code};
-  if(code==="-")return {category:"inactive",label:"Inactive payload",status:"Non-operational",code};
-  return {category:"unknown",label:"Unknown payload status",status:"Unknown / not reported",code:code||"Blank"};
- }
- return {category:"unknown",label:"Unknown object type",status:"Unclassified",code:code||"—"};
-}
-function normalize(r,source="CelesTrak SATCAT"){
- const c=classify(r);return {...r,_id:String(r.NORAD_CAT_ID||r.CATALOG_NUMBER||"").trim(),_name:r.OBJECT_NAME||r.OBJECT_NAME_ALT||"Unnamed object",_type:r.OBJECT_TYPE||"UNK",_owner:r.OWNER||"",_class:c,_source:source};
-}
-function satAge(gp){if(!gp?.EPOCH)return null;const d=(Date.now()-new Date(gp.EPOCH).getTime())/86400000;return Number.isFinite(d)?d:null;}
-function orbitFreshness(gp){const age=satAge(gp);if(age===null)return "No elements";if(age<=3)return "Current";if(age<=14)return "Aging";return "Stale";}
-function setState(id,txt){$(id).textContent=txt;}
-function updateMetrics(){
- const counts={active:0,inactive:0,debris:0,unknown:0};records.forEach(r=>counts[r._class.category]++);
- ["active","inactive","debris","unknown"].forEach(k=>setState(k+"Count",fmt(counts[k])));
- setState("recordStatus",fmt(records.length)+" records");
-}
-function renderTable(){
- const q=$("searchInput").value.trim().toLowerCase(),cat=$("categoryFilter").value;
- const list=records.filter(r=>(cat==="all"||r._class.category===cat)&&(!q||[r._name,r._id,r.OBJECT_ID,r.OWNER].join(" ").toLowerCase().includes(q))).slice(0,1000);
- setState("recordSummary",`${fmt(list.length)} matching records · showing up to 1,000`);
- $("catalogueBody").innerHTML=list.length?list.map(r=>{
- const gp=gpById.get(r._id),fresh=orbitFreshness(gp),tag=r._class.category;
- return `<tr data-id="${esc(r._id)}"><td><b>${esc(r._name)}</b><small style="display:block;color:#91a8b8">${esc(r.OBJECT_ID||"")}</small></td><td>${esc(r._id||"—")}</td><td>${esc(r._type)}</td><td><span class="tag ${tag}">${esc(r._class.label)}</span></td><td>${esc(r._class.code)}</td><td>${esc(r._owner||"—")}</td><td>${esc(fresh)}</td></tr>`;
- }).join(""):'<tr><td colspan="7" class="empty">No matching records.</td></tr>';
- $("catalogueBody").querySelectorAll("tr[data-id]").forEach(tr=>tr.addEventListener("click",()=>selectRecord(tr.dataset.id)));
-}
-function selectRecord(id){
- selected=byId.get(String(id));if(!selected)return;
- const gp=gpById.get(selected._id),age=satAge(gp),fresh=orbitFreshness(gp);
- setState("selectedStatus",selected._class.label);
- const items=[
- ["Object name",selected._name],["NORAD catalogue ID",selected._id],["International designator",selected.OBJECT_ID],
- ["Object type",selected.OBJECT_TYPE],["Operational status code",selected._class.code],["Status interpretation",selected._class.status],
- ["Owner / operator",selected.OWNER],["Launch date",selected.LAUNCH_DATE],["Launch site",selected.LAUNCH_SITE],
- ["Decay date",selected.DECAY_DATE],["Orbital period (min)",selected.PERIOD],["Inclination (°)",selected.INCLINATION],
- ["Apogee (km)",selected.APOGEE],["Perigee (km)",selected.PERIGEE],["GP element epoch",gp?.EPOCH],
- ["Element age (days)",age===null?"Unavailable":age.toFixed(2)],["Element freshness",fresh],["Record provenance",selected._source]
- ];
- $("selectedDetails").className="detail-grid";
- $("selectedDetails").innerHTML=items.map(([k,v])=>`<div class="detail"><span>${esc(k)}</span><b>${esc(v??"—")}</b></div>`).join("");
- if(!gp){setState("orbitStatus","No GP elements for selection");fetchGPFor(id);}
-}
-async function fetchGPFor(id){
- try{
-  const url=`https://celestrak.org/NORAD/elements/gp.php?CATNR=${encodeURIComponent(id)}&FORMAT=JSON`;
-  const res=await fetch(url);if(!res.ok)throw Error(`HTTP ${res.status}`);
-  const data=await res.json();if(!Array.isArray(data)||!data.length)throw Error("No GP elements returned");
-  gpById.set(String(id),data[0]);setState("gpState","Per-object GP record loaded");setState("orbitStatus","GP elements available");selectRecord(id);drawOrbit();
- }catch(e){setState("gpState","Unavailable for selected object");console.warn("GP lookup:",e);}
-}
-async function loadSatcat(force=false){
- setState("connectionStatus","Connecting");setState("satcatState","Downloading…");
- try{
-  let csv=null;
-  if(!force){try{const cached=localStorage.getItem(CACHE_KEY);if(cached){const obj=JSON.parse(cached);if(Date.now()-obj.savedAt<12*3600e3){csv=obj.csv;setState("satcatState","Cached copy (<12h)");}}}catch(e){}}
-  if(!csv){const response=await fetch(SATCAT_URL,{cache:"no-store"});if(!response.ok)throw Error(`SATCAT HTTP ${response.status}`);csv=await response.text();try{localStorage.setItem(CACHE_KEY,JSON.stringify({savedAt:Date.now(),csv}));}catch(e){}setState("satcatState","Live source fetched");}
-  const rows=parseCSV(csv);if(!rows.length)throw Error("No catalogue rows parsed");
-  records=rows.map(r=>normalize(r)).filter(r=>r._id);
-  byId=new Map(records.map(r=>[r._id,r]));sourceTimes.satcat=new Date().toISOString();
-  setState("statusState","SATCAT status codes loaded");setState("connectionStatus","Catalogue available");setState("lastUpdated","SATCAT retrieved: "+dateText(sourceTimes.satcat));
-  updateMetrics();renderTable();await loadInitialGP();
- }catch(e){
-  setState("satcatState","Fetch failed");setState("connectionStatus","Source unavailable");
-  $("recordSummary").textContent="Live catalogue could not be retrieved. Check network access or CORS restrictions.";
-  $("catalogueBody").innerHTML=`<tr><td colspan="7" class="empty error">${esc(e.message)}. No simulated data has been substituted.</td></tr>`;
-  console.error(e);
- }
-}
-async function loadInitialGP(){
- setState("gpState","Loading station group…");
- try{
-  const res=await fetch(GP_STATIONS_URL);if(!res.ok)throw Error(`GP HTTP ${res.status}`);
-  const data=await res.json();if(!Array.isArray(data))throw Error("Unexpected GP response");
-  data.forEach(g=>{const id=String(g.NORAD_CAT_ID||"");if(id)gpById.set(id,g);});
-  sourceTimes.gp=new Date().toISOString();setState("gpState",`${fmt(data.length)} station-group elements`);setState("orbitStatus",`${fmt(gpById.size)} propagated objects`);
-  setState("lastUpdated",`SATCAT: ${dateText(sourceTimes.satcat)} · GP: ${dateText(sourceTimes.gp)}`);
-  renderTable();drawOrbit();
- }catch(e){setState("gpState","Unavailable");setState("orbitStatus","No orbital feed");console.warn(e);}
-}
-function drawOrbit(){
- const canvas=$("orbitCanvas"),ctx=canvas.getContext("2d"),rect=canvas.getBoundingClientRect(),dpr=window.devicePixelRatio||1;
- canvas.width=Math.max(1,rect.width*dpr);canvas.height=Math.max(1,rect.height*dpr);ctx.scale(dpr,dpr);
- const w=rect.width,h=rect.height,cx=w/2,cy=h/2,R=Math.min(w,h)*.29;
- ctx.clearRect(0,0,w,h);
- for(let r=R;r<R*2.8;r+=R*.38){ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.strokeStyle="#24445a";ctx.lineWidth=1;ctx.stroke();}
- ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);const grad=ctx.createRadialGradient(cx-R*.3,cy-R*.35,2,cx,cy,R);grad.addColorStop(0,"#26718b");grad.addColorStop(1,"#0a263a");ctx.fillStyle=grad;ctx.fill();ctx.strokeStyle="#54a9bc";ctx.stroke();
- ctx.strokeStyle="#4a8494";ctx.globalAlpha=.5;ctx.beginPath();ctx.ellipse(cx,cy,R,R*.34,0,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.ellipse(cx,cy,R*.34,R,0,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1;
- let plotted=0;const now=new Date();
- for(const [id,gp] of gpById){try{
-  const satrec=satellite.json2satrec(gp),pv=satellite.propagate(satrec,now);if(!pv.position)continue;
-  const p=pv.position,mag=Math.hypot(p.x,p.y,p.z);if(!Number.isFinite(mag))continue;
-  const x=cx+(p.x/mag)*R*1.8,y=cy-(p.y/mag)*R*1.8;
-  const rec=byId.get(id),cat=rec?rec._class.category:"unknown";
-  ctx.beginPath();ctx.arc(x,y,2.5,0,Math.PI*2);ctx.fillStyle=({active:"#55d7a0",inactive:"#ff8585",debris:"#77baff",unknown:"#e5c477"})[cat];ctx.fill();plotted++;
- }catch(e){}}
- setState("orbitStatus",`${fmt(plotted)} positions plotted · ${now.toLocaleTimeString()}`);
-}
-function importCSV(file){
- const reader=new FileReader();reader.onload=()=>{
-  try{const rows=parseCSV(String(reader.result));const incoming=rows.map(r=>normalize(r,"Imported CSV")).filter(r=>r._id);
-   let added=0;incoming.forEach(r=>{if(!byId.has(r._id)){records.push(r);byId.set(r._id,r);added++;}else{const ix=records.findIndex(x=>x._id===r._id);records[ix]=r;byId.set(r._id,r);}importedIds.add(r._id);});
-   setState("importState",`${fmt(incoming.length)} imported · ${fmt(added)} new`);updateMetrics();renderTable();
-  }catch(e){alert("CSV import failed: "+e.message);}
- };reader.readAsText(file);
-}
-$("searchButton").addEventListener("click",()=>{
- const q=$("searchInput").value.trim();renderTable();
- if(/^\d+$/.test(q)&&!byId.has(q))fetchSATCATById(q);
-});
-async function fetchSATCATById(id){
- try{const res=await fetch(`https://celestrak.org/satcat/records.php?CATNR=${encodeURIComponent(id)}&FORMAT=JSON`);if(!res.ok)throw Error(res.status);
- const data=await res.json();if(Array.isArray(data)&&data.length){const r=normalize(data[0]);records.unshift(r);byId.set(r._id,r);updateMetrics();renderTable();selectRecord(r._id);}
- }catch(e){console.warn("Individual SATCAT lookup failed",e);}
-}
-$("searchInput").addEventListener("input",renderTable);$("categoryFilter").addEventListener("change",renderTable);
-$("refreshButton").addEventListener("click",()=>loadSatcat(true));
-$("importButton").addEventListener("click",()=>$("fileInput").click());
-$("fileInput").addEventListener("change",e=>{if(e.target.files[0])importCSV(e.target.files[0]);e.target.value="";});
-window.addEventListener("resize",drawOrbit);
-setInterval(()=>$("headerClock").textContent=new Date().toLocaleString(),1000);
-$("headerClock").textContent=new Date().toLocaleString();
-loadSatcat();
+function classify(name){const n=(name||'').toUpperCase();if(/DEB|FRAG|UNKNOWN OBJECT|OBJECT [A-Z0-9-]+/.test(n))return 'debris';if(/R\/B|ROCKET BODY|RB$|AKM|BREEZE|FREGAT|CENT[A-Z]*UR|SL-\d|CZ-\d|H-\d R\/B/.test(n))return 'rocket';if(/PAYLOAD|STARLINK|ONEWEB|IRIDIUM|NOAA|COSMOS|GPS|GALILEO|GLONASS|SENTINEL|LANDSAT|ISS|TIANGONG|GOES|METEOR|TERRA|AQUA/.test(n))return 'payload';return 'unknown';}
+function classLabel(c){return ({payload:'Payload / satellite',debris:'Debris',rocket:'Rocket body',unknown:'Other / unclassified'})[c]||'Other / unclassified';}
+function parseRecord(raw){const name=raw.NAME||raw.OBJECT_NAME||'Unnamed object';const id=Number(raw.NORAD_CAT_ID||raw.NORAD_ID||raw.OBJECT_ID);const epoch=raw.EPOCH||null;const meanMotion=Number(raw.MEAN_MOTION);const inclination=Number(raw.INCLINATION);let semi=NaN;if(meanMotion>0)semi=Math.cbrt(398600.4418/Math.pow(meanMotion*2*Math.PI/86400,2));const approxAlt=Number.isFinite(semi)?semi-EARTH_RADIUS_KM:NaN;return {...raw,name,norad:id,epoch,meanMotion,inclination,approxAlt,class:classify(name),satrec:null};}
+async function fetchCatalogue(){const btn=$('refreshBtn');btn.disabled=true;btn.textContent='Loading…';$('connectionLabel').textContent='CONNECTING';$('networkState').textContent='Connecting';$('networkState').className='warn';$('globeStatus').textContent='Retrieving public orbital elements';setNotice('Connecting to CelesTrak to retrieve its active GP catalogue.');try{const response=await fetch(SOURCE,{cache:'no-store'});if(!response.ok)throw new Error(`CelesTrak returned HTTP ${response.status}`);const data=await response.json();if(!Array.isArray(data)||!data.length)throw new Error('The data source returned no catalogue records.');const satlib=await import('https://cdn.jsdelivr.net/npm/satellite.js@6.0.1/+esm');const next=data.map(parseRecord);for(const rec of next){try{if(rec.TLE_LINE1&&rec.TLE_LINE2)rec.satrec=satlib.twoline2satrec(rec.TLE_LINE1,rec.TLE_LINE2);else if(rec.satrec===null&&rec.MEAN_MOTION)rec.satrec=satlib.json2satrec? satlib.json2satrec(rec):null;}catch(e){rec.satrec=null;}}
+ state.objects=next;state.lastUpdated=new Date();$('connectionLabel').textContent='SOURCE CONNECTED';$('networkState').textContent='Connected';$('networkState').className='status';$('dataTimestamp').textContent=state.lastUpdated.toISOString().replace('T',' ').slice(0,19)+' UTC';$('mUpdated').textContent=state.lastUpdated.toISOString().slice(11,19)+' UTC';const epochs=next.map(x=>Date.parse(x.epoch)).filter(Number.isFinite);$('mEpoch').textContent=epochs.length?'Latest epoch: '+new Date(Math.max(...epochs)).toISOString().slice(0,10):'Catalogue epoch: unavailable';$('globeStatus').textContent='Catalogue loaded · positions propagated locally';setNotice(`Successfully loaded ${next.length.toLocaleString()} records from CelesTrak. Object classes are heuristic name-based labels; review individual source records for authoritative identification.`);renderAll();}
+ catch(err){console.error(err);$('connectionLabel').textContent='SOURCE UNAVAILABLE';$('networkState').textContent='Unavailable';$('networkState').className='error';$('globeStatus').textContent='No current catalogue data';setNotice(`Catalogue retrieval failed: ${err.message}. Check the internet connection, then refresh. No live data is being simulated.`, 'error');}
+ finally{btn.disabled=false;btn.textContent='↻ Refresh catalogue';}}
+function propagate(rec){if(!rec.satrec)return null;try{const satlib=window.satellite;return null;}catch(e){return null;}}
+let satModule=null;
+async function positionFor(rec){if(!rec.satrec)return null;try{if(!satModule)satModule=await import('https://cdn.jsdelivr.net/npm/satellite.js@6.0.1/+esm');const pv=satModule.propagate(rec.satrec,new Date());if(!pv||!pv.position||!Number.isFinite(pv.position.x))return null;const gmst=satModule.gstime(new Date());const geo=satModule.eciToGeodetic(pv.position,gmst);return {x:geo.longitude,y:geo.latitude,alt:geo.height};}catch(e){return null;}}
+function geoVector(lon,lat,r){const lo=lon,la=lat;return new THREE.Vector3(-r*Math.cos(la)*Math.cos(lo),r*Math.sin(la),r*Math.cos(la)*Math.sin(lo));}
+async function updateMarkers(){state.markers.clear();state.markerRecords=[];const max= Math.min(state.objects.length,1800);const step=Math.max(1,Math.ceil(state.objects.length/max));let added=0;for(let i=0;i<state.objects.length;i+=step){const rec=state.objects[i];const pos=await positionFor(rec);if(!pos)continue;const color=rec.class==='debris'?0xe4b75d:rec.class==='rocket'?0xff7777:rec.class==='payload'?0x36c9e8:0x91a8ba;const dot=new THREE.Mesh(new THREE.SphereGeometry(.045,8,8),new THREE.MeshBasicMaterial({color}));dot.position.copy(geoVector(pos.x,pos.y,5+Math.max(0,pos.alt)/EARTH_RADIUS_KM*5));dot.userData.record=rec;state.markers.add(dot);state.markerRecords.push(rec);added++;} $('globeStatus').textContent=`${added.toLocaleString()} propagated positions shown · sample capped for performance`;}
+function filtered(){const q=$('searchInput').value.trim().toLowerCase(),type=$('typeFilter').value,sort=$('sortFilter').value;let arr=state.objects.filter(r=>(!q||r.name.toLowerCase().includes(q)||String(r.norad).includes(q))&&(type==='all'||r.class===type));arr.sort((a,b)=>sort==='norad'?(a.norad||0)-(b.norad||0):sort==='epoch'?Date.parse(b.epoch||0)-Date.parse(a.epoch||0):a.name.localeCompare(b.name));return arr;}
+function renderTable(){const arr=filtered();$('rowCount').textContent=`${arr.length.toLocaleString()} RECORDS`;const body=$('catalogueBody');if(!arr.length){body.innerHTML='<tr><td colspan="6" class="muted">No matching records. Refresh the catalogue or change the filters.</td></tr>';return;}const fragment=document.createDocumentFragment();for(const r of arr.slice(0,1500)){const tr=document.createElement('tr');tr.innerHTML=`<td>${escapeHtml(r.name)}</td><td>${Number.isFinite(r.norad)?r.norad:'—'}</td><td><span class="type-pill ${r.class==='debris'?'type-debris':r.class==='rocket'?'type-rocket':''}">${classLabel(r.class)}</span></td><td>${fmt(r.approxAlt,0)} km</td><td>${fmt(r.inclination,2)}°</td><td>${r.epoch?escapeHtml(r.epoch.replace('T',' ').replace('Z',' UTC')):'—'}</td>`;tr.addEventListener('click',()=>selectObject(r));fragment.appendChild(tr);}body.replaceChildren(fragment);}
+function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+async function selectObject(rec){state.selected=rec;const p=await positionFor(rec);$('detail').innerHTML=`<div class="detail-name">${escapeHtml(rec.name)}</div><span class="tag">${classLabel(rec.class)}</span><span class="tag">NORAD ${Number.isFinite(rec.norad)?rec.norad:'Unavailable'}</span><div class="kv"><div><small>Approx. altitude*</small><b>${p?fmt(p.alt,1)+' km':fmt(rec.approxAlt,0)+' km (catalogue estimate)'}</b></div><div><small>Inclination</small><b>${fmt(rec.inclination,3)}°</b></div><div><small>Orbital period</small><b>${rec.meanMotion>0?fmt(1440/rec.meanMotion,1)+' min':'Unavailable'}</b></div><div><small>Mean motion</small><b>${fmt(rec.meanMotion,5)} rev/day</b></div><div><small>Latitude / longitude</small><b>${p?fmt(p.y,2)+'° / '+fmt(p.x,2)+'°':'Not propagated'}</b></div><div><small>Orbital epoch</small><b>${escapeHtml(rec.epoch||'Unavailable')}</b></div></div><p class="muted" style="font-size:10px;margin:12px 0 0">Operational status: not established by these public orbital elements. Classification is inferred from the object name.</p>`;}
+function renderAll(){const n=state.objects.length,counts={payload:0,debris:0,rocket:0,unknown:0};for(const r of state.objects)counts[r.class]++;$('mTotal').textContent=n.toLocaleString();$('mPayload').textContent=counts.payload.toLocaleString();$('mDebris').textContent=(counts.debris+counts.rocket).toLocaleString();renderTable();updateMarkers();}
+function exportCSV(){if(!state.objects.length){setNotice('There are no catalogue records to export. Refresh the catalogue first.','error');return;}const cols=['name','norad','class','epoch','MEAN_MOTION','INCLINATION','ECCENTRICITY','RA_OF_ASC_NODE','ARG_OF_PERICENTER','MEAN_ANOMALY','approxAlt'];const csv=[cols.join(','),...state.objects.map(r=>cols.map(k=>{const v=r[k]??'';return '"'+String(v).replace(/"/g,'""')+'"';}).join(','))].join('\r\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='aamush-orbital-catalogue-'+new Date().toISOString().slice(0,10)+'.csv';a.click();URL.revokeObjectURL(url);}
+$('refreshBtn').addEventListener('click',fetchCatalogue);$('exportBtn').addEventListener('click',exportCSV);$('searchInput').addEventListener('input',renderTable);$('typeFilter').addEventListener('change',renderTable);$('sortFilter').addEventListener('change',renderTable);$('resetView').addEventListener('click',()=>{if(state.camera&&state.controls){state.camera.position.set(0,0,17);state.controls.target.set(0,0,0);state.controls.update();}});
+try{initGlobe();}catch(e){console.error(e);$('globeStatus').textContent='3D renderer unavailable';setNotice('The 3D renderer could not initialise in this browser. Catalogue retrieval may still work.','error');}
+fetchCatalogue();
 </script>
 </body>
 </html>
