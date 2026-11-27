@@ -1,2 +1,1 @@
-# aamush-orbital-tracking-system
-AAMUSH TECHNOLOGY Satellite and Orbital Debris Tracking System — a real-data platform for satellite catalogue monitoring, verified operational-status classification, orbital analysis, satellite tracking, and space-debris monitoring.
+AAMUSH TECHNOLOGY – Satellite and Orbital Debris Tracking System: A real-data platform for satellite catalogue monitoring, satellite identification, orbital analysis, satellite tracking, space-object classification, and space-debris monitoring, using publicly available and validated orbital data.
