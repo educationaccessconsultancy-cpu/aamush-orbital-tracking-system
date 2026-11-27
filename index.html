@@ -23,21 +23,40 @@
 <section class="panel table-panel"><div class="panel-head"><h2>Orbital object catalogue</h2><small id="rowCount">0 RECORDS</small></div><div class="toolbar"><input id="searchInput" type="search" placeholder="Search object name or NORAD catalogue number…" aria-label="Search satellite catalogue"><select id="typeFilter" aria-label="Filter object type"><option value="all">All object classes</option><option value="payload">Payload / satellite</option><option value="debris">Debris</option><option value="rocket">Rocket body</option><option value="unknown">Other / unclassified</option></select><select id="sortFilter" aria-label="Sort catalogue"><option value="name">Sort: name</option><option value="norad">Sort: NORAD ID</option><option value="epoch">Sort: epoch</option></select></div><div class="table-scroll"><table><thead><tr><th>Object name</th><th>NORAD ID</th><th>Object class</th><th>Orbit altitude*</th><th>Inclination</th><th>Epoch (UTC)</th></tr></thead><tbody id="catalogueBody"><tr><td colspan="6" class="muted">No catalogue data loaded. Select “Refresh catalogue”.</td></tr></tbody></table></div></section>
 <footer class="footer"><span>© <span id="year"></span> AAMUSH TECHNOLOGY · ORBITAL INTELLIGENCE</span><span>*Altitude is an instantaneous approximate geocentric altitude derived from propagated position. Not a conjunction or collision-risk service.</span></footer>
 </main>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+  }
+}
+</script>
 <script type="module">
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
-import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js';
+let THREE=null, OrbitControls=null, fallbackCanvas=null, fallbackPoints=[], fallbackDraw=null;
+
 
 const $=id=>document.getElementById(id);
 const state={objects:[],selected:null,lastUpdated:null,scene:null,camera:null,renderer:null,controls:null,earth:null,markers:null,markerRecords:[],animationId:null,textureLoader:null};
 const EARTH_RADIUS_KM=6371;
-const SOURCE='https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=json';
+const SOURCE='https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=tle';
 const fmt=(v,d=1)=>Number.isFinite(v)?v.toFixed(d):'—';
 function setNotice(message,kind=''){const el=$('notice');el.textContent=message;el.className='notice '+kind;}
 function updateClock(){$('clock').textContent=new Date().toISOString().slice(11,19)+' UTC';}
 setInterval(updateClock,1000);updateClock();$('year').textContent=new Date().getFullYear();
+window.addEventListener('error',e=>{console.error('Orbital console runtime error:',e.error||e.message);const n=$('notice');if(n){n.textContent='Application runtime error: '+(e.message||'Unknown browser error')+'. Check network access and reload the page.';n.className='notice error';}});
+window.addEventListener('unhandledrejection',e=>{console.error('Orbital console async error:',e.reason);const n=$('notice');if(n){n.textContent='A required service or library could not load: '+(e.reason?.message||String(e.reason));n.className='notice error';}});
 
-function initGlobe(){
+async function initGlobe(){
  const host=$('globe');
+ try {
+  const threeLib=await import('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js');
+  const controlsLib=await import('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js');
+  THREE=threeLib; OrbitControls=controlsLib.OrbitControls;
+ } catch(libError) {
+  console.warn('3D libraries unavailable; starting interactive 2D fallback:',libError);
+  initFallbackGlobe();
+  $('globeStatus').textContent='2D fallback active · 3D library unavailable';
+  return;
+ }
  const scene=new THREE.Scene();scene.background=new THREE.Color(0x06111d);
  const camera=new THREE.PerspectiveCamera(45,host.clientWidth/host.clientHeight,.1,2000);camera.position.set(0,0,17);
  const renderer=new THREE.WebGLRenderer({antialias:true,alpha:false});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(host.clientWidth,host.clientHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;host.appendChild(renderer.domElement);
@@ -53,18 +72,40 @@ function initGlobe(){
  const resize=()=>{const w=host.clientWidth,h=host.clientHeight;if(!w||!h)return;camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h);};new ResizeObserver(resize).observe(host);
  const animate=()=>{state.animationId=requestAnimationFrame(animate);earth.rotation.y+=.00045;atmosphere.rotation.y+=.00035;controls.update();renderer.render(scene,camera);};animate();
 }
+function initFallbackGlobe(){
+ const host=$('globe'); host.innerHTML='';
+ const canvas=document.createElement('canvas'); canvas.style.width='100%';canvas.style.height='100%';canvas.style.display='block';canvas.style.touchAction='none';host.appendChild(canvas);fallbackCanvas=canvas;
+ const ctx=canvas.getContext('2d');let zoom=1,drag=false,lastX=0,offset=0;
+ function draw(){const w=host.clientWidth,h=host.clientHeight,dpr=Math.min(devicePixelRatio||1,2);canvas.width=w*dpr;canvas.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);const r=Math.min(w*.34,h*.39)*zoom,cx=w/2+offset,cy=h/2;
+ ctx.fillStyle='#06111d';ctx.fillRect(0,0,w,h);const g=ctx.createRadialGradient(cx-r*.3,cy-r*.35,r*.05,cx,cy,r);g.addColorStop(0,'#3488ae');g.addColorStop(.7,'#14506e');g.addColorStop(1,'#061b32');ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();ctx.strokeStyle='#64c8e8';ctx.lineWidth=1;ctx.stroke();
+ ctx.save();ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.clip();ctx.strokeStyle='#78b8ce55';ctx.lineWidth=1;for(let k=-2;k<=2;k++){ctx.beginPath();ctx.ellipse(cx,cy,r,Math.max(2,r*Math.cos(k*Math.PI/6)),0,0,Math.PI*2);ctx.stroke();}for(let k=0;k<12;k++){ctx.beginPath();ctx.ellipse(cx,cy,r, r, k*Math.PI/12,0,Math.PI*2);ctx.stroke();}ctx.restore();
+ fallbackPoints.forEach(pt=>{const x=cx+((pt.lon/180)*r),y=cy-((pt.lat/90)*r*.85);ctx.beginPath();ctx.arc(x,y,3.2,0,Math.PI*2);ctx.fillStyle=pt.rec.class==='debris'?'#e4b75d':pt.rec.class==='rocket'?'#ff7777':'#36c9e8';ctx.fill();pt.x=x;pt.y=y;});
+ ctx.fillStyle='#c9e5f3';ctx.font='10px Arial';ctx.fillText('INTERACTIVE ORBITAL MAP · DRAG TO PAN · PINCH / WHEEL TO ZOOM',12,h-14);
+ }
+ fallbackDraw=draw;
+ canvas.addEventListener('pointerdown',e=>{drag=true;lastX=e.clientX;canvas.setPointerCapture(e.pointerId);});canvas.addEventListener('pointermove',e=>{if(drag){offset+=e.clientX-lastX;lastX=e.clientX;draw();}});canvas.addEventListener('pointerup',()=>drag=false);canvas.addEventListener('wheel',e=>{e.preventDefault();zoom=Math.max(.65,Math.min(2.2,zoom*(e.deltaY<0?1.1:.9)));draw();},{passive:false});canvas.addEventListener('click',e=>{const rect=canvas.getBoundingClientRect(),x=e.clientX-rect.left,y=e.clientY-rect.top;let best=null,dist=14;fallbackPoints.forEach(p=>{const d=Math.hypot(p.x-x,p.y-y);if(d<dist){dist=d;best=p;}});if(best)selectObject(best.rec);});new ResizeObserver(draw).observe(host);draw();
+}
 function classify(name){const n=(name||'').toUpperCase();if(/DEB|FRAG|UNKNOWN OBJECT|OBJECT [A-Z0-9-]+/.test(n))return 'debris';if(/R\/B|ROCKET BODY|RB$|AKM|BREEZE|FREGAT|CENT[A-Z]*UR|SL-\d|CZ-\d|H-\d R\/B/.test(n))return 'rocket';if(/PAYLOAD|STARLINK|ONEWEB|IRIDIUM|NOAA|COSMOS|GPS|GALILEO|GLONASS|SENTINEL|LANDSAT|ISS|TIANGONG|GOES|METEOR|TERRA|AQUA/.test(n))return 'payload';return 'unknown';}
 function classLabel(c){return ({payload:'Payload / satellite',debris:'Debris',rocket:'Rocket body',unknown:'Other / unclassified'})[c]||'Other / unclassified';}
 function parseRecord(raw){const name=raw.NAME||raw.OBJECT_NAME||'Unnamed object';const id=Number(raw.NORAD_CAT_ID||raw.NORAD_ID||raw.OBJECT_ID);const epoch=raw.EPOCH||null;const meanMotion=Number(raw.MEAN_MOTION);const inclination=Number(raw.INCLINATION);let semi=NaN;if(meanMotion>0)semi=Math.cbrt(398600.4418/Math.pow(meanMotion*2*Math.PI/86400,2));const approxAlt=Number.isFinite(semi)?semi-EARTH_RADIUS_KM:NaN;return {...raw,name,norad:id,epoch,meanMotion,inclination,approxAlt,class:classify(name),satrec:null};}
-async function fetchCatalogue(){const btn=$('refreshBtn');btn.disabled=true;btn.textContent='Loading…';$('connectionLabel').textContent='CONNECTING';$('networkState').textContent='Connecting';$('networkState').className='warn';$('globeStatus').textContent='Retrieving public orbital elements';setNotice('Connecting to CelesTrak to retrieve its active GP catalogue.');try{const response=await fetch(SOURCE,{cache:'no-store'});if(!response.ok)throw new Error(`CelesTrak returned HTTP ${response.status}`);const data=await response.json();if(!Array.isArray(data)||!data.length)throw new Error('The data source returned no catalogue records.');const satlib=await import('https://cdn.jsdelivr.net/npm/satellite.js@6.0.1/+esm');const next=data.map(parseRecord);for(const rec of next){try{if(rec.TLE_LINE1&&rec.TLE_LINE2)rec.satrec=satlib.twoline2satrec(rec.TLE_LINE1,rec.TLE_LINE2);else if(rec.satrec===null&&rec.MEAN_MOTION)rec.satrec=satlib.json2satrec? satlib.json2satrec(rec):null;}catch(e){rec.satrec=null;}}
- state.objects=next;state.lastUpdated=new Date();$('connectionLabel').textContent='SOURCE CONNECTED';$('networkState').textContent='Connected';$('networkState').className='status';$('dataTimestamp').textContent=state.lastUpdated.toISOString().replace('T',' ').slice(0,19)+' UTC';$('mUpdated').textContent=state.lastUpdated.toISOString().slice(11,19)+' UTC';const epochs=next.map(x=>Date.parse(x.epoch)).filter(Number.isFinite);$('mEpoch').textContent=epochs.length?'Latest epoch: '+new Date(Math.max(...epochs)).toISOString().slice(0,10):'Catalogue epoch: unavailable';$('globeStatus').textContent='Catalogue loaded · positions propagated locally';setNotice(`Successfully loaded ${next.length.toLocaleString()} records from CelesTrak. Object classes are heuristic name-based labels; review individual source records for authoritative identification.`);renderAll();}
- catch(err){console.error(err);$('connectionLabel').textContent='SOURCE UNAVAILABLE';$('networkState').textContent='Unavailable';$('networkState').className='error';$('globeStatus').textContent='No current catalogue data';setNotice(`Catalogue retrieval failed: ${err.message}. Check the internet connection, then refresh. No live data is being simulated.`, 'error');}
- finally{btn.disabled=false;btn.textContent='↻ Refresh catalogue';}}
-function propagate(rec){if(!rec.satrec)return null;try{const satlib=window.satellite;return null;}catch(e){return null;}}
+async function fetchCatalogue(){
+ const btn=$('refreshBtn');btn.disabled=true;btn.textContent='Loading…';$('connectionLabel').textContent='CONNECTING';$('networkState').textContent='Connecting';$('networkState').className='warn';$('globeStatus').textContent='Retrieving public TLE orbital elements';setNotice('Connecting to CelesTrak. Retrieving two-line element sets for SGP4 propagation.');
+ try{
+  const response=await fetch(SOURCE,{cache:'no-store'});if(!response.ok)throw new Error(`CelesTrak returned HTTP ${response.status}`);
+  const tleText=await response.text();const lines=tleText.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);const satlib=await import('https://cdn.jsdelivr.net/npm/satellite.js@6.0.1/+esm');satModule=satlib;
+  const next=[];for(let i=0;i<lines.length;){let name='',l1='',l2='';if(lines[i].startsWith('1 ')){l1=lines[i++];if(lines[i]?.startsWith('2 '))l2=lines[i++];}else{name=lines[i++].replace(/^0\s*/, '');if(lines[i]?.startsWith('1 '))l1=lines[i++];if(lines[i]?.startsWith('2 '))l2=lines[i++];}
+   if(!l1.startsWith('1 ')||!l2.startsWith('2 '))continue;try{const satrec=satlib.twoline2satrec(l1,l2);const norad=Number(l1.slice(2,7));const epochYear=Number(l1.slice(18,20));const epochDay=Number(l1.slice(20,32));const year=epochYear<57?2000+epochYear:1900+epochYear;const epochDate=new Date(Date.UTC(year,0,1)+(epochDay-1)*86400000).toISOString();const meanMotion=Number(l2.slice(52,63));const inclination=Number(l2.slice(8,16));const semi=meanMotion>0?Math.cbrt(398600.4418/Math.pow(meanMotion*2*Math.PI/86400,2)):NaN;const approxAlt=Number.isFinite(semi)?semi-EARTH_RADIUS_KM:NaN;const objectName=name||`NORAD ${norad}`;next.push({name:objectName,norad,epoch:epochDate,meanMotion,inclination,approxAlt,class:classify(objectName),satrec,TLE_LINE1:l1,TLE_LINE2:l2});}catch(err){console.warn('Skipping invalid TLE record',err);}}
+  if(!next.length)throw new Error('No valid two-line element sets were received.');state.objects=next;state.lastUpdated=new Date();$('connectionLabel').textContent='SOURCE CONNECTED';$('networkState').textContent='Connected';$('networkState').className='status';$('dataTimestamp').textContent=state.lastUpdated.toISOString().replace('T',' ').slice(0,19)+' UTC';$('mUpdated').textContent=state.lastUpdated.toISOString().slice(11,19)+' UTC';const epochs=next.map(x=>Date.parse(x.epoch)).filter(Number.isFinite);$('mEpoch').textContent=epochs.length?'Latest epoch: '+new Date(Math.max(...epochs)).toISOString().slice(0,10):'Catalogue epoch: unavailable';$('globeStatus').textContent='TLE catalogue loaded · calculating positions';setNotice(`Loaded ${next.length.toLocaleString()} valid TLE records. Satellite positions are calculated locally with SGP4. Object categories are inferred from names, not operational status.`);renderAll();
+ }catch(err){console.error(err);$('connectionLabel').textContent='SOURCE UNAVAILABLE';$('networkState').textContent='Unavailable';$('networkState').className='error';$('globeStatus').textContent='No current catalogue data';setNotice(`Catalogue retrieval failed: ${err.message}. Confirm internet access and press Refresh catalogue. The display will not invent satellite positions.`,'error');}
+ finally{btn.disabled=false;btn.textContent='↻ Refresh catalogue';}
+}
 let satModule=null;
 async function positionFor(rec){if(!rec.satrec)return null;try{if(!satModule)satModule=await import('https://cdn.jsdelivr.net/npm/satellite.js@6.0.1/+esm');const pv=satModule.propagate(rec.satrec,new Date());if(!pv||!pv.position||!Number.isFinite(pv.position.x))return null;const gmst=satModule.gstime(new Date());const geo=satModule.eciToGeodetic(pv.position,gmst);return {x:geo.longitude,y:geo.latitude,alt:geo.height};}catch(e){return null;}}
 function geoVector(lon,lat,r){const lo=lon,la=lat;return new THREE.Vector3(-r*Math.cos(la)*Math.cos(lo),r*Math.sin(la),r*Math.cos(la)*Math.sin(lo));}
-async function updateMarkers(){state.markers.clear();state.markerRecords=[];const max= Math.min(state.objects.length,1800);const step=Math.max(1,Math.ceil(state.objects.length/max));let added=0;for(let i=0;i<state.objects.length;i+=step){const rec=state.objects[i];const pos=await positionFor(rec);if(!pos)continue;const color=rec.class==='debris'?0xe4b75d:rec.class==='rocket'?0xff7777:rec.class==='payload'?0x36c9e8:0x91a8ba;const dot=new THREE.Mesh(new THREE.SphereGeometry(.045,8,8),new THREE.MeshBasicMaterial({color}));dot.position.copy(geoVector(pos.x,pos.y,5+Math.max(0,pos.alt)/EARTH_RADIUS_KM*5));dot.userData.record=rec;state.markers.add(dot);state.markerRecords.push(rec);added++;} $('globeStatus').textContent=`${added.toLocaleString()} propagated positions shown · sample capped for performance`;}
+async function updateMarkers(){
+ if(!state.markers){fallbackPoints=[];const max=Math.min(state.objects.length,700),step=Math.max(1,Math.ceil(state.objects.length/max));for(let i=0;i<state.objects.length;i+=step){const rec=state.objects[i],pos=await positionFor(rec);if(pos)fallbackPoints.push({rec,lon:pos.x*180/Math.PI,lat:pos.y*180/Math.PI});}if(fallbackDraw)fallbackDraw(); $('globeStatus').textContent=`${fallbackPoints.length.toLocaleString()} propagated positions shown · interactive 2D fallback`;return;}
+ state.markers.clear();state.markerRecords=[];const max=Math.min(state.objects.length,1800);const step=Math.max(1,Math.ceil(state.objects.length/max));let added=0;for(let i=0;i<state.objects.length;i+=step){const rec=state.objects[i];const pos=await positionFor(rec);if(!pos)continue;const color=rec.class==='debris'?0xe4b75d:rec.class==='rocket'?0xff7777:rec.class==='payload'?0x36c9e8:0x91a8ba;const dot=new THREE.Mesh(new THREE.SphereGeometry(.045,8,8),new THREE.MeshBasicMaterial({color}));dot.position.copy(geoVector(pos.x,pos.y,5+Math.max(0,pos.alt)/EARTH_RADIUS_KM*5));dot.userData.record=rec;state.markers.add(dot);state.markerRecords.push(rec);added++;} $('globeStatus').textContent=`${added.toLocaleString()} propagated positions shown · sample capped for performance`;
+}
 function filtered(){const q=$('searchInput').value.trim().toLowerCase(),type=$('typeFilter').value,sort=$('sortFilter').value;let arr=state.objects.filter(r=>(!q||r.name.toLowerCase().includes(q)||String(r.norad).includes(q))&&(type==='all'||r.class===type));arr.sort((a,b)=>sort==='norad'?(a.norad||0)-(b.norad||0):sort==='epoch'?Date.parse(b.epoch||0)-Date.parse(a.epoch||0):a.name.localeCompare(b.name));return arr;}
 function renderTable(){const arr=filtered();$('rowCount').textContent=`${arr.length.toLocaleString()} RECORDS`;const body=$('catalogueBody');if(!arr.length){body.innerHTML='<tr><td colspan="6" class="muted">No matching records. Refresh the catalogue or change the filters.</td></tr>';return;}const fragment=document.createDocumentFragment();for(const r of arr.slice(0,1500)){const tr=document.createElement('tr');tr.innerHTML=`<td>${escapeHtml(r.name)}</td><td>${Number.isFinite(r.norad)?r.norad:'—'}</td><td><span class="type-pill ${r.class==='debris'?'type-debris':r.class==='rocket'?'type-rocket':''}">${classLabel(r.class)}</span></td><td>${fmt(r.approxAlt,0)} km</td><td>${fmt(r.inclination,2)}°</td><td>${r.epoch?escapeHtml(r.epoch.replace('T',' ').replace('Z',' UTC')):'—'}</td>`;tr.addEventListener('click',()=>selectObject(r));fragment.appendChild(tr);}body.replaceChildren(fragment);}
 function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
@@ -72,7 +113,7 @@ async function selectObject(rec){state.selected=rec;const p=await positionFor(re
 function renderAll(){const n=state.objects.length,counts={payload:0,debris:0,rocket:0,unknown:0};for(const r of state.objects)counts[r.class]++;$('mTotal').textContent=n.toLocaleString();$('mPayload').textContent=counts.payload.toLocaleString();$('mDebris').textContent=(counts.debris+counts.rocket).toLocaleString();renderTable();updateMarkers();}
 function exportCSV(){if(!state.objects.length){setNotice('There are no catalogue records to export. Refresh the catalogue first.','error');return;}const cols=['name','norad','class','epoch','MEAN_MOTION','INCLINATION','ECCENTRICITY','RA_OF_ASC_NODE','ARG_OF_PERICENTER','MEAN_ANOMALY','approxAlt'];const csv=[cols.join(','),...state.objects.map(r=>cols.map(k=>{const v=r[k]??'';return '"'+String(v).replace(/"/g,'""')+'"';}).join(','))].join('\r\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='aamush-orbital-catalogue-'+new Date().toISOString().slice(0,10)+'.csv';a.click();URL.revokeObjectURL(url);}
 $('refreshBtn').addEventListener('click',fetchCatalogue);$('exportBtn').addEventListener('click',exportCSV);$('searchInput').addEventListener('input',renderTable);$('typeFilter').addEventListener('change',renderTable);$('sortFilter').addEventListener('change',renderTable);$('resetView').addEventListener('click',()=>{if(state.camera&&state.controls){state.camera.position.set(0,0,17);state.controls.target.set(0,0,0);state.controls.update();}});
-try{initGlobe();}catch(e){console.error(e);$('globeStatus').textContent='3D renderer unavailable';setNotice('The 3D renderer could not initialise in this browser. Catalogue retrieval may still work.','error');}
+initGlobe().catch(e=>{console.error(e);initFallbackGlobe();$('globeStatus').textContent='Interactive 2D fallback active';setNotice('3D renderer unavailable; interactive 2D map enabled.','warn');});
 fetchCatalogue();
 </script>
 </body>
